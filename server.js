@@ -18,7 +18,7 @@ app.use(express.json());
 connectDB();
 
 // Define routes
-// app.use(productsRouter);
+app.use(productsRouter);
 // app.use(usersRouter);
 // app.use(reviewsRouter);
 // app.use(paymentRouter);
