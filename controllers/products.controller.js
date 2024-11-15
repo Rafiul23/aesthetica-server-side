@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const connectDB = require('../config/db');
 
 const getAllBrands = async(req, res)=>{
@@ -26,7 +27,20 @@ const getProductsByBrands = async(req, res)=>{
     }
 }
 
+const getSingleProduct = async(req, res)=>{
+    try {
+        const db = connectDB();
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await db.collection('product').findOne(query);
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: error});
+    }
+}
+
 module.exports = {
     getAllBrands,
     getProductsByBrands,
+    getSingleProduct,
 }
