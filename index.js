@@ -13,8 +13,6 @@ app.get('/', (req, res)=>{
     res.send('Aesthetica server is running');
 })
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wlof2pa.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -33,11 +31,17 @@ async function run() {
 
     const productsCollection = client.db('productsDB').collection('product');
     const cartCollection = client.db('productsDB').collection('cart');
+    const brandCollection = client.db('productsDB').collection('brands');
 
     app.post('/products', async(req, res)=>{
         const newProduct = req.body;
         const result = await productsCollection.insertOne(newProduct);
         res.send(result);
+    })
+
+    app.get('/brands', async(req, res)=>{
+      const result = await brandCollection.find().toArray();
+      res.send(result);
     })
 
     app.get('/products/:brand_name', async(req, res)=>{
