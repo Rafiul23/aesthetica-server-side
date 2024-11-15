@@ -39,8 +39,20 @@ const getSingleProduct = async(req, res)=>{
     }
 }
 
+const addToCart = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        const cartData = req.body;
+        const result = await db.collection('cart').insertOne(cartData);
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: error});
+    }
+}
+
 module.exports = {
     getAllBrands,
     getProductsByBrands,
     getSingleProduct,
+    addToCart
 }
