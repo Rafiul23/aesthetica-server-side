@@ -50,9 +50,25 @@ const addToCart = async(req, res)=>{
     }
 }
 
+const getCartData = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        let query = {};
+        if(req?.query?.email){
+            query = {
+                email: req?.query?.email
+            }
+        };
+        const result = await db.collection('cart').find(query).toArray();
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: error}); 
+    }
+}
 module.exports = {
     getAllBrands,
     getProductsByBrands,
     getSingleProduct,
-    addToCart
+    addToCart,
+    getCartData
 }
