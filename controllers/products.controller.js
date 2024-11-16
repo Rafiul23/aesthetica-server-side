@@ -64,11 +64,24 @@ const getCartData = async(req, res)=>{
     } catch (error) {
         res.status(500).json({message: error}); 
     }
+};
+
+const deleteCart = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await db.collection('cart').deleteOne(query);
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: error});  
+    }
 }
 module.exports = {
     getAllBrands,
     getProductsByBrands,
     getSingleProduct,
     addToCart,
-    getCartData
+    getCartData,
+    deleteCart
 }
