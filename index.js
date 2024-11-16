@@ -56,7 +56,7 @@ async function run() {
         const query = { _id: new ObjectId(id)};
         const result = await productsCollection.findOne(query);
         res.send(result);
-    })
+    });
 
     app.put('/product/:id', async (req, res) => {
         const id = req.params.id;
