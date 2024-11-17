@@ -7,6 +7,7 @@ const {
   getCartData,
   deleteCartItem,
   addProduct,
+  deleteProduct,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.post("/carts", addToCart);
 router.get("/carts", getCartData);
 router.delete("/carts/:id", deleteCartItem);
 router.post('/product', addProduct);
+router.delete('/products/:id', deleteProduct);
 
 module.exports = router;

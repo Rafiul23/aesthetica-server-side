@@ -89,6 +89,18 @@ const addProduct = async(req, res)=>{
     }
 }
 
+const deleteProduct = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await db.collection('product').deleteOne(query);
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: 'Failed to delete product'});  
+    }
+}
+
 module.exports = {
     getAllBrands,
     getProductsByBrands,
@@ -96,5 +108,6 @@ module.exports = {
     addToCart,
     getCartData,
     deleteCartItem,
-    addProduct
+    addProduct,
+    deleteProduct
 }
