@@ -66,7 +66,7 @@ const getCartData = async(req, res)=>{
     }
 };
 
-const deleteCart = async(req, res)=>{
+const deleteCartItem = async(req, res)=>{
     try {
         const db = await connectDB();
         const id = req.params.id;
@@ -74,14 +74,27 @@ const deleteCart = async(req, res)=>{
         const result = await db.collection('cart').deleteOne(query);
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error});  
+        res.status(500).json({message: 'Failed to delete from cart'});  
     }
 }
+
+const addProduct = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        const newProduct = req.body;
+        const result = await db.collection('product').insertOne(newProduct);
+        res.send(result); 
+    } catch (error) {
+        res.status(500).json({message: 'Failed to add product'});  
+    }
+}
+
 module.exports = {
     getAllBrands,
     getProductsByBrands,
     getSingleProduct,
     addToCart,
     getCartData,
-    deleteCart
+    deleteCartItem,
+    addProduct
 }
