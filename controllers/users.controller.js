@@ -45,32 +45,50 @@ const removeToken = async (req, res) => {
   }
 };
 
-const getAllUsers = async(req, res)=>{
+const getAllUsers = async (req, res) => {
   try {
     const db = await connectDB();
-    const result = await db.collection('users').find().toArray();
+    const result = await db.collection("users").find().toArray();
     res.send(result);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch users" });
   }
-}
+};
 
-const deleteUser = async(req, res)=>{
+const deleteUser = async (req, res) => {
   try {
     const db = await connectDB();
     const id = req.params.id;
-    const query = {_id: new ObjectId(id)};
-    const result = await db.collection('users').deleteOne(query);
+    const query = { _id: new ObjectId(id) };
+    const result = await db.collection("users").deleteOne(query);
     res.send(result);
   } catch (error) {
     res.status(500).json({ message: "Failed to delete users" });
   }
-}
+};
+
+const makeAdmin = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const updatedRole = {
+      $set: {
+        role: "admin",
+      },
+    };
+    const result = await db.collection("users").updateOne(filter, updatedRole);
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to make user an admin" });
+  }
+};
 
 module.exports = {
   saveUser,
   postToken,
   removeToken,
   getAllUsers,
-  deleteUser
+  deleteUser,
+  makeAdmin,
 };
