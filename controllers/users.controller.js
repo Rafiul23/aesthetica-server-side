@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const connectDB = require("../config/db");
 const jwt = require("jsonwebtoken");
 
@@ -54,9 +55,22 @@ const getAllUsers = async(req, res)=>{
   }
 }
 
+const deleteUser = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await db.collection('users').deleteOne(query);
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete users" });
+  }
+}
+
 module.exports = {
   saveUser,
   postToken,
   removeToken,
-  getAllUsers
+  getAllUsers,
+  deleteUser
 };
