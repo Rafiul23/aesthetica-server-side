@@ -7,7 +7,7 @@ const getAllBrands = async(req, res)=>{
         const result = await db.collection('brands').find().toArray();
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error});
+        res.status(500).json({message: 'Failed to fetch brands data'});
     }
 }
 
@@ -23,19 +23,19 @@ const getProductsByBrands = async(req, res)=>{
         const result = await db.collection('product').find(query).toArray();
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error});
+        res.status(500).json({message: 'Failed to products by brands'});
     }
 }
 
 const getSingleProduct = async(req, res)=>{
     try {
-        const db = connectDB();
+        const db = await connectDB();
         const id = req.params.id;
         const query = {_id: new ObjectId(id)};
         const result = await db.collection('product').findOne(query);
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error});
+        res.status(500).json({message: 'Failed to get single product'});
     }
 }
 
@@ -46,7 +46,7 @@ const addToCart = async(req, res)=>{
         const result = await db.collection('cart').insertOne(cartData);
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error});
+        res.status(500).json({message: 'Failed to add to cart'});
     }
 }
 
@@ -62,7 +62,7 @@ const getCartData = async(req, res)=>{
         const result = await db.collection('cart').find(query).toArray();
         res.send(result);
     } catch (error) {
-        res.status(500).json({message: error}); 
+        res.status(500).json({message: 'Failed to find cart data'}); 
     }
 };
 
@@ -101,6 +101,31 @@ const deleteProduct = async(req, res)=>{
     }
 }
 
+const updateProduct = async(req, res)=>{
+    try {
+       const db = await connectDB();
+       const updatedProduct = req.body;
+       const id = req.params.id;
+       const filter = {_id: new ObjectId(id)};
+       const options = {upsert: true};
+        const updatedData = {
+            $set: {
+                productImg: updatedProduct.productImg,
+                productName: updatedProduct.productName,
+                brand_name: updatedProduct.brand_name,
+                productType: updatedProduct.productType,
+                price: updatedProduct.price,
+                description: updatedProduct.description,
+                rating: updatedProduct.rating
+            }
+        }
+        const result = await db.collection('product').updateOne(filter, updatedData, options);
+        res.send(result);
+    } catch (error) {
+        res.status(500).json({message: 'Failed to update product'});    
+    }
+}
+
 module.exports = {
     getAllBrands,
     getProductsByBrands,
@@ -109,5 +134,6 @@ module.exports = {
     getCartData,
     deleteCartItem,
     addProduct,
-    deleteProduct
+    deleteProduct,
+    updateProduct
 }
