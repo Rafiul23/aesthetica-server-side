@@ -43,8 +43,20 @@ const removeToken = async (req, res) => {
     res.status(500).json({ message: "Failed to remove token" });
   }
 };
+
+const getAllUsers = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const result = await db.collection('users').find().toArray();
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+}
+
 module.exports = {
   saveUser,
   postToken,
   removeToken,
+  getAllUsers
 };
