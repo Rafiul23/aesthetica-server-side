@@ -124,6 +124,21 @@ const updateProduct = async(req, res)=>{
     } catch (error) {
         res.status(500).json({message: 'Failed to update product'});    
     }
+};
+
+const orderProducts = async(req, res)=>{
+    try {
+        const db = await connectDB();
+        const order = req.body;
+        const orderResult = await db.collection('orders').insertOne(order);
+        const query = {_id: {
+            $in: order.cartId.map(id => new ObjectId(id))
+        }}
+        const deleteResult = await db.collection('cart').deleteMany(query);
+        res.send({orderResult, deleteResult});
+    } catch (error) {
+        res.status(500).json({message: 'Failed to order'});     
+    }
 }
 
 module.exports = {
@@ -135,5 +150,6 @@ module.exports = {
     deleteCartItem,
     addProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    orderProducts
 }
