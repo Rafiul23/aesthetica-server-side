@@ -10,6 +10,8 @@ const {
   deleteProduct,
   updateProduct,
   orderProducts,
+  paymentIntentFunc,
+  savePayment,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -23,5 +25,7 @@ router.post('/product', addProduct);
 router.delete('/products/:id', deleteProduct);
 router.put('/products/:id', updateProduct);
 router.post('/orders', orderProducts);
+router.post('/create-payment-intent', paymentIntentFunc);
+router.post('/payments', savePayment);
 
 module.exports = router;
