@@ -129,22 +129,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const orderProducts = async (req, res) => {
-  try {
-    const db = await connectDB();
-    const order = req.body;
-    const orderResult = await db.collection("orders").insertOne(order);
-    const query = {
-      _id: {
-        $in: order.cartId.map((id) => new ObjectId(id)),
-      },
-    };
-    const deleteResult = await db.collection("cart").deleteMany(query);
-    res.send({ orderResult, deleteResult });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to order" });
-  }
-};
+
 
 const paymentIntentFunc = async (req, res) => {
   try {
@@ -172,13 +157,28 @@ const savePayment = async(req, res)=>{
         const query = {_id: {
             $in: payment.cartId.map(id => new ObjectId(id))
         }};
-        console.log(query);
-        console.log(payment);
-        const deleteResult = await db.collection('carts').deleteMany(query);
+        
+        const deleteResult = await db.collection('cart').deleteMany(query);
         res.send({paymentResult, deleteResult});
     } catch (error) {
         res.status(500).json({ error: 'Failed to save payment info' });
     }
+}
+
+const getPaymentsInfo = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    let query = {};
+    if(req?.query?.email){
+      query = {
+        email: req?.query?.email
+      }
+    }
+    const result = await db.collection('payments').find(query).toArray();
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get payment info' });
+  }
 }
 
 module.exports = {
@@ -191,7 +191,7 @@ module.exports = {
   addProduct,
   deleteProduct,
   updateProduct,
-  orderProducts,
   paymentIntentFunc,
-  savePayment
+  savePayment,
+  getPaymentsInfo
 };
