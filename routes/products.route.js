@@ -12,6 +12,7 @@ const {
   paymentIntentFunc,
   savePayment,
   getPaymentsInfo,
+  getOrderedProducts,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.delete('/products/:id', deleteProduct);
 router.put('/products/:id', updateProduct);
 router.post('/create-payment-intent', paymentIntentFunc);
 router.post('/payments', savePayment);
-router.get('/payments', getPaymentsInfo )
+router.get('/payments', getPaymentsInfo );
+router.get('/orders', getOrderedProducts);
 
 module.exports = router;

@@ -129,57 +129,116 @@ const updateProduct = async (req, res) => {
   }
 };
 
-
-
 const paymentIntentFunc = async (req, res) => {
   try {
     const db = await connectDB();
-    const {price} = req.body;
+    const { price } = req.body;
     const amount = parseInt(price * 100);
     const paymentIntent = await stripe.paymentIntents.create({
-        amount,
-        currency: 'usd',
-        payment_method_types: ['card']
+      amount,
+      currency: "usd",
+      payment_method_types: ["card"],
     });
     res.send({
-        clientSecret: paymentIntent.client_secret
-    })
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to pay" });
   }
 };
 
-const savePayment = async(req, res)=>{
-    try {
-        const db = await connectDB();
-        const payment = req.body;
-        const paymentResult = await db.collection('payments').insertOne(payment);
-        const query = {_id: {
-            $in: payment.cartId.map(id => new ObjectId(id))
-        }};
-        
-        const deleteResult = await db.collection('cart').deleteMany(query);
-        res.send({paymentResult, deleteResult});
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to save payment info' });
-    }
-}
+const savePayment = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const payment = req.body;
+    const paymentResult = await db.collection("payments").insertOne(payment);
+    const query = {
+      _id: {
+        $in: payment.cartId.map((id) => new ObjectId(id)),
+      },
+    };
 
-const getPaymentsInfo = async(req, res)=>{
+    const deleteResult = await db.collection("cart").deleteMany(query);
+    res.send({ paymentResult, deleteResult });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to save payment info" });
+  }
+};
+
+const getPaymentsInfo = async (req, res) => {
   try {
     const db = await connectDB();
     let query = {};
-    if(req?.query?.email){
+    if (req?.query?.email) {
       query = {
-        email: req?.query?.email
-      }
+        email: req?.query?.email,
+      };
     }
-    const result = await db.collection('payments').find(query).toArray();
+    const result = await db.collection("payments").find(query).toArray();
     res.send(result);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to get payment info' });
+    res.status(500).json({ error: "Failed to get payment info" });
   }
-}
+};
+
+const getOrderedProducts = async (req, res) => {
+  try {
+    const db = await connectDB();
+    let query = {};
+    if (req?.query?.email) {
+      query = {
+        email: req?.query?.email,
+      };
+    }
+    const result = await db
+      .collection("payments")
+      .aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: "product",
+            let: { productItemIds: "$productItemId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      {
+                        $map: {
+                          input: "$$productItemIds",
+                          as: "id",
+                          in: { $toObjectId: "$$id" },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "products",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            email: 1,
+            price: 1,
+            date: 1,
+            transactionId: 1,
+            cartId: 1,
+            status: 1,
+            products: 1,
+          },
+        },
+      ])
+      .toArray();
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to get ordered products" });
+  }
+};
 
 module.exports = {
   getAllBrands,
@@ -193,5 +252,6 @@ module.exports = {
   updateProduct,
   paymentIntentFunc,
   savePayment,
-  getPaymentsInfo
+  getPaymentsInfo,
+  getOrderedProducts,
 };
