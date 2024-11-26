@@ -13,6 +13,7 @@ const {
   savePayment,
   getPaymentsInfo,
   getOrderedProducts,
+  getAllOrders,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -29,5 +30,7 @@ router.post('/create-payment-intent', paymentIntentFunc);
 router.post('/payments', savePayment);
 router.get('/payments', getPaymentsInfo );
 router.get('/orders', getOrderedProducts);
+router.get('/allOrders', getAllOrders);
+
 
 module.exports = router;

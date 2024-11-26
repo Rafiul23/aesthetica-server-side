@@ -240,6 +240,60 @@ const getOrderedProducts = async (req, res) => {
   }
 };
 
+const getAllOrders = async (req, res) => {
+  try {
+    const db = await connectDB();
+    
+    const result = await db
+      .collection("payments")
+      .aggregate([
+        
+        {
+          $lookup: {
+            from: "product",
+            let: { productItemIds: "$productItemId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      {
+                        $map: {
+                          input: "$$productItemIds",
+                          as: "id",
+                          in: { $toObjectId: "$$id" },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "products",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            email: 1,
+            price: 1,
+            date: 1,
+            transactionId: 1,
+            cartId: 1,
+            status: 1,
+            products: 1,
+          },
+        },
+      ])
+      .toArray();
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to get all ordered products" });
+  }
+};
+
 module.exports = {
   getAllBrands,
   getProductsByBrands,
@@ -254,4 +308,5 @@ module.exports = {
   savePayment,
   getPaymentsInfo,
   getOrderedProducts,
+  getAllOrders
 };
