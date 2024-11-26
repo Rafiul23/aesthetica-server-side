@@ -294,6 +294,23 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+const confirmDelivery = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const id = req.params.id;
+    const filter = {_id: new ObjectId(id)};
+    const updateStatus = {
+      $set: {
+        status: 'Delivered'
+      }
+    }
+    const result = await db.collection('payments').updateOne(filter, updateStatus);
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update status" });
+  }
+}
+
 module.exports = {
   getAllBrands,
   getProductsByBrands,
@@ -308,5 +325,6 @@ module.exports = {
   savePayment,
   getPaymentsInfo,
   getOrderedProducts,
-  getAllOrders
+  getAllOrders,
+  confirmDelivery
 };

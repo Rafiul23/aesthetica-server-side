@@ -14,6 +14,7 @@ const {
   getPaymentsInfo,
   getOrderedProducts,
   getAllOrders,
+  confirmDelivery,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -31,6 +32,6 @@ router.post('/payments', savePayment);
 router.get('/payments', getPaymentsInfo );
 router.get('/orders', getOrderedProducts);
 router.get('/allOrders', getAllOrders);
-
+router.patch('/orders/:id', confirmDelivery);
 
 module.exports = router;
