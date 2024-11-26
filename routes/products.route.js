@@ -15,6 +15,7 @@ const {
   getOrderedProducts,
   getAllOrders,
   confirmDelivery,
+  addReview,
 } = require("../controllers/products.controller");
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.get('/payments', getPaymentsInfo );
 router.get('/orders', getOrderedProducts);
 router.get('/allOrders', getAllOrders);
 router.patch('/orders/:id', confirmDelivery);
+router.post('/reviews', addReview);
 
 module.exports = router;

@@ -309,6 +309,17 @@ const confirmDelivery = async(req, res)=>{
   } catch (error) {
     res.status(500).json({ error: "Failed to update status" });
   }
+};
+
+const addReview = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const review = req.body;
+    const result = await db.collection('reviews').insertOne(review);
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add review" });
+  }
 }
 
 module.exports = {
@@ -326,5 +337,6 @@ module.exports = {
   getPaymentsInfo,
   getOrderedProducts,
   getAllOrders,
-  confirmDelivery
+  confirmDelivery,
+  addReview
 };
