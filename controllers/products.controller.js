@@ -320,6 +320,16 @@ const addReview = async(req, res)=>{
   } catch (error) {
     res.status(500).json({ error: "Failed to add review" });
   }
+};
+
+const getAllReviews = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const result = await db.collection('reviews').find().toArray();
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get reviews" });
+  }
 }
 
 module.exports = {
@@ -338,5 +348,6 @@ module.exports = {
   getOrderedProducts,
   getAllOrders,
   confirmDelivery,
-  addReview
+  addReview,
+  getAllReviews
 };
