@@ -339,12 +339,31 @@ const getStatsInfo = async(req, res)=>{
     const products = await db.collection("product").estimatedDocumentCount();
     const orders = await db.collection("payments").estimatedDocumentCount();
     const payments = await db.collection('payments').find().toArray();
-    const revenue = payments.reduce((sum, item)=> sum + item.price, 0);
+    const revenue = payments.reduce((sum, item)=> sum + parseFloat(item.price), 0);
     res.send({ users, products, orders, revenue });
   } catch (error) {
     res.status(500).json({ error: "Failed to get stats info" });
   }
 }
+
+const getUsersSats = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    let query = {};
+    if(req?.query?.email){
+      query = {
+        email: req?.query?.email
+      }
+    }
+    const orders = await db.collection("payments").countDocuments(query);
+    const payments = await db.collection('payments').find(query).toArray();
+    const revenue = payments.reduce((sum, item)=> sum + parseFloat(item.price), 0);
+    res.send({ orders, revenue });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get stats info" });
+  }
+}
+
 
 module.exports = {
   getAllBrands,
@@ -364,5 +383,6 @@ module.exports = {
   confirmDelivery,
   addReview,
   getAllReviews,
-  getStatsInfo
+  getStatsInfo,
+  getUsersSats
 };
