@@ -330,6 +330,20 @@ const getAllReviews = async(req, res)=>{
   } catch (error) {
     res.status(500).json({ error: "Failed to get reviews" });
   }
+};
+
+const getStatsInfo = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const users = await db.collection("users").estimatedDocumentCount();
+    const products = await db.collection("product").estimatedDocumentCount();
+    const orders = await db.collection("payments").estimatedDocumentCount();
+    const payments = await db.collection('payments').find().toArray();
+    const revenue = payments.reduce((sum, item)=> sum + item.price, 0);
+    res.send({ users, products, orders, revenue });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get stats info" });
+  }
 }
 
 module.exports = {
@@ -349,5 +363,6 @@ module.exports = {
   getAllOrders,
   confirmDelivery,
   addReview,
-  getAllReviews
+  getAllReviews,
+  getStatsInfo
 };
