@@ -84,6 +84,23 @@ const makeAdmin = async (req, res) => {
   }
 };
 
+const isAdmin = async(req, res)=>{
+  try {
+    const db = await connectDB();
+    const email = req.params.email;
+    const query = {email: email};
+    const user = await db.collection('users').findOne(query);
+    let admin = false;
+    if(user){
+      admin = user?.role === 'admin';
+      res.send({admin});
+    }
+    
+  } catch (error) {
+    res.status(500).json({ message: "Failed to check an admin" });
+  }
+}
+
 module.exports = {
   saveUser,
   postToken,
@@ -91,4 +108,5 @@ module.exports = {
   getAllUsers,
   deleteUser,
   makeAdmin,
+  isAdmin,
 };
