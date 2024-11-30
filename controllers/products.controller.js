@@ -54,6 +54,9 @@ const addToCart = async (req, res) => {
 const getCartData = async (req, res) => {
   try {
     const db = await connectDB();
+    if(req.user.email !== req?.query?.email){
+      return res.status(403).send({message: 'Forbidden access'});
+    }
     let query = {};
     if (req?.query?.email) {
       query = {
@@ -131,7 +134,6 @@ const updateProduct = async (req, res) => {
 
 const paymentIntentFunc = async (req, res) => {
   try {
-    const db = await connectDB();
     const { price } = req.body;
     const amount = parseInt(price * 100);
     const paymentIntent = await stripe.paymentIntents.create({
@@ -168,6 +170,9 @@ const savePayment = async (req, res) => {
 const getPaymentsInfo = async (req, res) => {
   try {
     const db = await connectDB();
+    if(req.user.email !== req?.query?.email){
+      return res.status(403).send({message: 'Forbidden access'});
+    }
     let query = {};
     if (req?.query?.email) {
       query = {
@@ -185,6 +190,9 @@ const getOrderedProducts = async (req, res) => {
   try {
     const db = await connectDB();
     let query = {};
+    if(req.user.email !== req?.query?.email){
+      return res.status(403).send({message: 'Forbidden access'});
+    }
     if (req?.query?.email) {
       query = {
         email: req?.query?.email,
@@ -350,6 +358,9 @@ const getUsersSats = async(req, res)=>{
   try {
     const db = await connectDB();
     let query = {};
+    if(req.user.email !== req?.query?.email){
+      return res.status(403).send({message: 'Forbidden access'});
+    }
     if(req?.query?.email){
       query = {
         email: req?.query?.email
