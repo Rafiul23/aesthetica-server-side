@@ -2,6 +2,12 @@ const { ObjectId } = require("mongodb");
 const connectDB = require("../config/db");
 const jwt = require("jsonwebtoken");
 
+const cookieOption = {
+  httpOnly: true,
+  sameSite: 'none',
+  secure: true
+}
+
 const saveUser = async (req, res) => {
   try {
     const db = await connectDB();
@@ -25,10 +31,7 @@ const postToken = async (req, res) => {
       expiresIn: "6h",
     });
     res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-      })
+      .cookie("token", token, cookieOption)
       .send({ success: true });
   } catch (error) {
     res.status(500).json({ message: "Failed to post token" });
@@ -39,7 +42,7 @@ const removeToken = async (req, res) => {
   try {
     const user = req.body;
     console.log("current user:", user);
-    res.clearCookie("token", { maxAge: 0 }).send({ success: true });
+    res.clearCookie("token", { ...cookieOption, maxAge: 0 }).send({ success: true });
   } catch (error) {
     res.status(500).json({ message: "Failed to remove token" });
   }
@@ -91,9 +94,10 @@ const isAdmin = async(req, res)=>{
     const query = {email: email};
     const user = await db.collection('users').findOne(query);
     let admin = false;
-    if(user){
-      admin = user?.role === 'admin';
-      res.send({admin});
+    if(user?.role === 'admin'){
+      res.send(true);
+    } else {
+      res.send(false);
     }
     
   } catch (error) {
