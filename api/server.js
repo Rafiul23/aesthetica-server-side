@@ -1,12 +1,10 @@
 // server.js
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const connectDB = require('../config/db');
 require('dotenv').config();
-const productsRouter = require('./routes/products.route');
-// const reviewsRouter = require('./routes/reviews.route');
-const usersRouter = require('./routes/users.route');
-// const paymentRouter = require('./routes/payment.route');
+const productsRouter = require('../routes/products.route');
+const usersRouter = require('../routes/users.route');
 const app = express();
 const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 5000;
@@ -23,8 +21,7 @@ connectDB();
 // Define routes
 app.use(productsRouter);
 app.use(usersRouter);
-// app.use(reviewsRouter);
-// app.use(paymentRouter);
+
 
 app.get('/', (req, res) => {
   res.send('Makeup is running');
