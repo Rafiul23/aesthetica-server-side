@@ -21,7 +21,7 @@ async function connectDB() {
   }
 
   try {
-    await client.connect();
+    // await client.connect();
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
     return db = client.db("productsDB"); 
   } catch (err) {
